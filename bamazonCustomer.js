@@ -20,7 +20,7 @@ connection.connect(function(err) {
 function readData(){
     connection.query("SELECT * FROM products", function(error, res){
         for (var i = 0; i < res.length; i++){
-            console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price);
+            console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price + " | Units left: " + res[i].stock_quantity);
         }
         console.log("--------------------------------");
     });
@@ -41,7 +41,6 @@ function getUserInput(){
     ]).then(function(answers){
         // call function that checks databases availability
         checkAvailability(answers.item_id, parseInt(answers.stock_quantity));
-        readData();
     });
 }
 
@@ -50,11 +49,11 @@ function checkAvailability(itemID, wantedQuan){
     // first lets search and grab the item with the corresponding id
     connection.query("SELECT * FROM products WHERE item_id=?", [itemID], function(err, res){
         if (err) throw err;
-        console.log(res[0].stock_quantity);
         // now we need to check if we have enough to sell
         // if the resQuan is more than the wantedQuan then we need to update our database
-        if (res[0].stock_quantity >= parseInt(wantedQuan)){
-            console.log("youre in luck!");
+        if (res[0].stock_quantity >= wantedQuan){
+            // call function to update item in our db
+            updateItemStock(itemID, res[0].stock_quantity, wantedQuan);
         } else {
             console.log("we dont have enough teehee");
         }
@@ -62,7 +61,25 @@ function checkAvailability(itemID, wantedQuan){
     });
 }
 
-// then we need to check either let them buy it or tell them they cant
+function updateItemStock(itemID, ogStock, numBought){
+    var newStock = ogStock - numBought;
+    connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+            {
+                stock_quantity: newStock
+            }, {
+                item_id: itemID
+            }
+        ], 
+        function(error) {
+            if (error) throw err;
+            console.log("congrats!");
+            readData();
+        }  
+    );
+}
+
 
 // -------------- END OF DAY GOAL ---------------- //
 // probably having the whole project 'done' like the easy part and then you can polish it up by saturday
