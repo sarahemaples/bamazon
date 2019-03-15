@@ -41,7 +41,7 @@ function getUserInput(){
             name: "stock_quantity",
             message: "How many units would you like? "
         }
-    ]).then(function(answers){
+    ], function(answers){
         // call function that checks databases availability
         checkAvailability(answers.item_id, parseInt(answers.stock_quantity));
     });
