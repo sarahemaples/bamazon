@@ -13,18 +13,21 @@ var connection = mysql.createConnection({
 // function that lets us know if we connected or nah
 connection.connect(function(err) {
     if (err) throw err;
-    getUserInput();
-})
+    readData();
+    // getUserInput();
+});
 
 // function that displays our data and ends the connection
 function readData(){
     connection.query("SELECT * FROM products", function(error, res){
         for (var i = 0; i < res.length; i++){
-            console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price + " | Units left: " + res[i].stock_quantity);
+            console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price);
         }
         console.log("--------------------------------");
+
+        getUserInput();
     });
-    connection.end();
+    // connection.end();
 }
 
 // function uses inquirer to get data from user
@@ -55,7 +58,8 @@ function checkAvailability(itemID, wantedQuan){
             // call function to update item in our db
             updateItemStock(itemID, res[0].stock_quantity, wantedQuan);
         } else {
-            console.log("we dont have enough teehee");
+            console.log("Sorry that item is not available in that quantity. Please pick a new action.");
+            readData();
         }
         console.log("--------------------------------");
     });

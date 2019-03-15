@@ -1,0 +1,22 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarahemaples/bamazon.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sarahemaples/bamazon/issues"
+  },
+  "homepage": "https://github.com/sarahemaples/bamazon#readme",
+  "dependencies": {
+    "inquirer-list-input": "^0.1.2"
+  }
+}
