@@ -84,9 +84,5 @@ function updateItemStock(itemID, ogStock, numBought){
     );
 }
 
-
-// -------------- END OF DAY GOAL ---------------- //
-// probably having the whole project 'done' like the easy part and then you can polish it up by saturday
-
 // ------------- STUFF TO WORK ON ------------------- //
 // have an exit() function that ends the connection so the user can keep looping through and buying more stuff

@@ -34,10 +34,13 @@ function listManagerOptions(){
         switch (answers.choice) {
             case "View Products for Sale":
                 viewProductsForSale();
+                break;
             case "View Low Inventory":
                 viewLowInventory();
+                break;
             case "Add to Inventory":
                 addToInventory();
+                break;
             // case "Add New Product":
             //     addNewProduct();
         }
@@ -58,7 +61,7 @@ function viewProductsForSale(){
 
 // View Low Inventory function grabs and lists all items with an inventory count lower than 5
 function viewLowInventory(){
-    connection.query("SELECT * FROM products WHERE stock_quantity<7", function(error, res){
+    connection.query("SELECT * FROM products WHERE stock_quantity<6", function(error, res){
         if (error) throw error;
         for (var i = 0; i < res.length; i++){
             console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price + " | Units left: " + res[i].stock_quantity);
@@ -67,31 +70,63 @@ function viewLowInventory(){
     });
 }
 
-var itemsInDB = [];
 // Add to Inventory
 function addToInventory(){
-    console.log(grabData());
-    // console.log(choiceList);
-    // inquirer.prompt([{
-    //     type: 'list',
-    //     name: 'itemToAddTo',
-    //     message: 'Which item do you want to add more of?',
-    //     choices: choiceList
-    // }])
-}
+    connection.query(
+        "SELECT * FROM products", 
+        function(error, res) {
+            if (error) throw error;
+            // prompt that lists all available items and allows user to pick
+            inquirer.prompt([
+            {
+                type: 'list',
+                name: 'itemToAddTo',
+                message: 'Which item do you want to add more of?',
+                choices: function(){
+                    var itemsInDB = [];
+                    for (var i=0; i<res.length; i++){
+                        itemsInDB.push(res[i].product_name);
+                    }
+                    return itemsInDB;
+                }   
+            }
+            ], function(answers){
+        // after user has picked item, we ask how many units they would like to add
+            var ourProduct = answers.itemToAddTo;
+            inquirer.prompt([
+            {
+                name: "toAdd",
+                message: "How many units of " + ourProduct + " would you like to add?"
+            }
+            // finally we need to update our db accordingly
+            ], function(userNum){
+                // we need to grab the old stock_quan and update it
+                connection.query(
+                    "SELECT * FROM products WHERE product_name=?", 
+                    [ourProduct], 
+                    function(err, res)
+                    {
+                        if (err) throw err;
 
-// grabs all items we have in our db
-function grabData(){
-    connection.query("SELECT * FROM products", function(error, res){
-        itemsInDB = [];
-        if (error) throw error;
-        console.log(res);
-        for (var i=0; i<res.length; i++){
-            itemsInDB.push(res[i].product_name);
-            console.log(res[i].product_name);
-        }
+                        var newStock = parseInt(res[0].stock_quantity) + parseInt(userNum.toAdd);
+
+                        connection.query(
+                            "UPDATE products SET ? WHERE ?",
+                            [
+                                {
+                                    stock_quantity: newStock
+                                }, {
+                                    product_name: ourProduct
+                                }
+                            ]
+                        )
+                    }
+                );
+            })
     });
-    return itemsInDB;
-}
+});
+
+};
+
 
 // Add New Product
