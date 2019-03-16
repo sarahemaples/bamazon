@@ -41,8 +41,9 @@ function listManagerOptions(){
             case "Add to Inventory":
                 addToInventory();
                 break;
-            // case "Add New Product":
-            //     addNewProduct();
+            case "Add New Product":
+                addNewProduct();
+                break;
         }
     });
 }
@@ -128,5 +129,33 @@ function addToInventory(){
 
 };
 
+function addNewProduct(){
+    // inquirer prompt to take in data from manager
+    inquirer.prompt([
+        {
+            name: "product_name",
+            message: "Name of product: "
+        }, {
+            name: "department_name",
+            message: "Name of department: "
+        }, {
+            name: "price",
+            message: "Price per unit: "
+        }, {
+            name: "stock_quantity",
+            message: "Units stocked: "
+        }
+    ], function(answers){
+        connection.query(
+            "INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES (?, ?, ?, ?)",
+            [answers.product_name, answers.department_name, answers.price, answers.stock_quantity],
+            function(err, res){
+                if (err) throw err;
 
-// Add New Product
+                console.log("your item has been added")
+
+                viewProductsForSale();
+            }
+        )
+    });
+}
