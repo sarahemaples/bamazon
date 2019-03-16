@@ -57,6 +57,7 @@ function viewProductsForSale(){
             console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price + " | Units left: " + res[i].stock_quantity);
         }
         console.log("--------------------------------");
+        listManagerOptions();
     });
 }
 
@@ -68,6 +69,7 @@ function viewLowInventory(){
             console.log(res[i].item_id + " | " + res[i].product_name + " | Price: $" + res[i].price + " | Units left: " + res[i].stock_quantity);
         }
         console.log("--------------------------------");
+        listManagerOptions();
     });
 }
 
@@ -120,7 +122,11 @@ function addToInventory(){
                                     product_name: ourProduct
                                 }
                             ]
-                        )
+                        );
+
+                        console.log("Updated stock for "+ourProduct + "\nNew stock is: "+newStock);
+
+                        listManagerOptions();
                     }
                 );
             })
@@ -152,9 +158,9 @@ function addNewProduct(){
             function(err, res){
                 if (err) throw err;
 
-                console.log("your item has been added")
+                console.log("Your item has been added")
 
-                viewProductsForSale();
+                listManagerOptions();
             }
         )
     });

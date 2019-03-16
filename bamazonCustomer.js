@@ -56,16 +56,15 @@ function checkAvailability(itemID, wantedQuan){
         // if the resQuan is more than the wantedQuan then we need to update our database
         if (res[0].stock_quantity >= wantedQuan){
             // call function to update item in our db
-            updateItemStock(itemID, res[0].stock_quantity, wantedQuan);
+            updateItemStock(res[0].product_name, itemID, res[0].stock_quantity, wantedQuan);
         } else {
-            console.log("Sorry that item is not available in that quantity. Please pick a new action.");
-            readData();
+            console.log("Sorry we do not have enough "+ res[0].product_name + ".");
+            getUserInput();
         }
-        console.log("--------------------------------");
     });
 }
 
-function updateItemStock(itemID, ogStock, numBought){
+function updateItemStock(name, itemID, ogStock, numBought){
     var newStock = ogStock - numBought;
     connection.query(
         "UPDATE products SET ? WHERE ?",
@@ -78,7 +77,8 @@ function updateItemStock(itemID, ogStock, numBought){
         ], 
         function(error) {
             if (error) throw err;
-            console.log("congrats!");
+            console.log("You have successfully purchased "+numBought+" units of "+name+".");
+            console.log("--------------------------------");
             readData();
         }  
     );
